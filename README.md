@@ -184,3 +184,4 @@ But who is authorised to call this method ? I dont't know , I studied the onwers
 Shouldn't there be a **mechanism or SOP** where a subscription owner can cancel subscriptions after requests have been designated as "failed" (i.e., more than 24 hours pending)?
 
 As this issue may happen repeatedly, it is tedious and time-consuming for subscription owners to contact Chainlink support repeatedly.
+![subscriptionManager](https://github.com/user-attachments/assets/dd0c8d14-2bd5-49a3-954d-181b2399be99)
