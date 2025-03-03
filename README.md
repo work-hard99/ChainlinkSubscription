@@ -141,7 +141,7 @@ function cancelSubscription(uint256 subId, address to) external override onlySub
     _cancelSubscriptionHelper(subId, to);
 }
 ```
-The issue is this after 24 hours ,pending request becomes failed request . But then also , we can neither can remove our consumer nor cancel subscription . Let us say consumer is a malicious contract , and it Dos'ed many requests , then subscription owner doesn't have any mechanism which can remove this consumer . As if we try to remove consumer , even 1 failed request will not let it . BECAUSE PENDING REQUESTS AND FAILED REQUESTS ARE BEING TREATED SAME BY Chainlink VRF2_5 Contract .
+The issue is  after 24 hours ,pending request becomes failed request . But then also , we can neither can remove our consumer nor cancel subscription . Let us say consumer is a malicious contract , and it Dos'ed many requests , then subscription owner doesn't have any mechanism which can remove this consumer . As if we try to remove consumer , even 1 failed request will not let it . BECAUSE PENDING REQUESTS AND FAILED REQUESTS ARE BEING TREATED SAME BY Chainlink VRF2_5 Contract .
 
 There is a solution that I can see ,
 ```
