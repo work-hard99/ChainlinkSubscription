@@ -115,7 +115,7 @@ contract RandomBridge is VRFConsumerBaseV2Plus {
 }
 ```
 
-## Chainlink VRF2.5 Contract Issue
+## And the methods and state variables causing potential error in chainlink vrf2.5 contract - 
 
 ```solidity
 function pendingRequestExists(uint256 subId) public view override returns (bool) {
@@ -141,6 +141,43 @@ function cancelSubscription(uint256 subId, address to) external override onlySub
     _cancelSubscriptionHelper(subId, to);
 }
 ```
+The issue is this after 24 hours ,pending request becomes failed request . But then also , we can neither can remove our consumer nor cancel subscription . Let us say consumer is a malicious contract , and it Dos'ed many requests , then subscription owner doesn't have any mechanism which can remove this consumer . As if we try to remove consumer , even 1 failed request will not let it . BECAUSE PENDING REQUESTS AND FAILED REQUESTS ARE BEING TREATED SAME BY Chainlink VRF2_5 Contract .
+
+There is a solution that I can see ,
+```
+contract VRFCoordinatorV2_5 is VRF, SubscriptionAPI, IVRFCoordinatorV2Plus {
+...}
+```
+vrf2_5 inherits SubscriptionAPI contract . Now in this contract there is a method -
+
+```
+/**
+   * @notice Owner cancel subscription, sends remaining link directly to the subscription owner.
+   * @param subId subscription id
+   * @dev notably can be called even if there are pending requests, outstanding ones may fail onchain
+   */
+  function ownerCancelSubscription(uint256 subId) external onlyOwner {
+    address subOwner = s_subscriptionConfigs[subId].owner;
+    if (subOwner == address(0)) {
+      revert InvalidSubscription();
+    }
+    _cancelSubscriptionHelper(subId, subOwner);
+  }
+```
+
+But who is authorised to call this method ? I dont't know , I studied the onwership chain -but it is delegated through multiple proxies and these are the possible owners:
+```
+[[0xB65B6d224351cD61f856c227b2d5cFc611E9B2d8]
+[0x4CD248bC8Ce09eD1c0c0688c75C38902Ac761967]
+[0xd8969669B7d71CdF8dEf1FAE729D3149427819A3]
+[0xeBa9302747bB9485CBc343ABF131d574d340fdED]
+[0xAB70e084DE1Da8289079C0aCc1b40BB05cD7b8EB]
+[0x8B2f801068dF07B83A025Ba093Da4A79b7c2ea3E]
+[0x0168d1035461A474A3DfCC461570c6C87b62b40D]
+[0x7c704eb7c6454D9c2cD3F460386a21ADdA71a8a7]
+[0x99B5C70f7cf97a44491466483439B630e875D773]]
+```
+
 
 ## Questions and Concerns
 
